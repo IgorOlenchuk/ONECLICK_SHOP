@@ -1,10 +1,11 @@
 from django.contrib import admin
+from django.urls import include, path
 from rest_framework.authtoken import views
-from django.urls import path, include
 
-#handler400 = 'blogs.views.page_bad_request'
-#handler404 = 'blogs.views.page_not_found'
-#handler500 = 'blogs.views.server_error'
+# handler400 = 'blogs.views.page_bad_request'
+# handler404 = 'blogs.views.page_not_found'
+# handler500 = 'blogs.views.server_error'
+
 
 urlpatterns = [
     # раздел администратора
@@ -13,8 +14,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-urlpatterns += [
-    #path('', include('oneclick_shop.urls')),
+urlpatterns = [
+    path('', include('oneclick_shop.urls')),
     path('api-token-auth/', views.obtain_auth_token),
     #path('api/', include('api.urls')),
     path('product/', include('product.urls')),

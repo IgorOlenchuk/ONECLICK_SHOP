@@ -1,0 +1,16 @@
+<header class="header">
+  <nav class="nav">
+      <div class="nav__container container">
+          <ul class="nav__items list">
+            {% with request.resolver_match.url_name as url_name %}
+              <li class="nav__item {% if 'index' in url_name %}nav__item_active{% endif %}"><a href="{% url 'index' %}" class="nav__link link">Главная</a></li>
+              {% if user.is_authenticated %}
+
+              {% endif %}
+            {% endwith %}
+          </ul>
+          <ul class="nav__items list">
+          </ul>
+      </div>
+  </nav>
+</header>

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Beauty Force{% endblock %}
+{% block css %}
+{% endblock %}
+
+{% block content %}
+
+<a>Главная страница: о нас; бренды; партнеры; маркетинг; видео; инстаграм; форма для контактов</a>
+
+  <div class="card-list">
+    {% for brand in page %}
+      {% include 'include/brand_card_full.html' with brand=brand %}
+    {% endfor %}
+  </div>
+
+  {% if page.has_other_pages %}
+    {% include './include/paginator.html' with page=page paginator=paginator %}
+  {% endif %}
+{% endblock %}

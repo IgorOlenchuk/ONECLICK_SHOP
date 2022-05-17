@@ -1,0 +1,14 @@
+{% load thumbnail %}
+<div class="card" data-id="{{ brand.id }}">
+  {% thumbnail brand.media '960x500' crop='center' as im %}
+  <a href="{% url 'brand_view_slug' brand.id brand.slug %}" class="link" target="_blank"><img src="{{ im.url }}" alt="{{ brand.title }}"
+      class="card__image"></a>
+  {% endthumbnail %}
+    <div class="card__items card__items_column">
+      <p class="card__text"><span class="icon-time"></span> {{ brand.title }} </p>
+    <div class="card__items card__items_column">
+      <p class="card__text"><span class="icon-time"></span> {{ brand.description }} </p>
+    </div>
+
+  </div>
+</div>

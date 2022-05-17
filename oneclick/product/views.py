@@ -1,7 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Sum
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Product, Brand, Store
@@ -9,20 +7,6 @@ from .forms import ProductForm, BrandForm, StoreForm
 from .utils import save_product, save_brand, edit_product, edit_brand, get_paginated_view, save_store, edit_store
 
 User = get_user_model()
-
-
-def index(request):
-    brands = Brand.objects.select_related(
-        'title').distinct()
-    products = Product.objects.select_related(
-        'brand').distinct()
-
-    page, paginator = get_paginated_view(request, brands, products)
-    context = {
-        'page': page,
-        'paginator': paginator,
-    }
-    return render(request, 'product/index.html', context)
 
 
 @login_required
@@ -174,7 +158,7 @@ def store_delete(request, store_id, slug):
 
 def product_view_slug(request, product_id, slug):
     product = get_object_or_404(
-        Product.objects.select_related('author'),
+        Product.objects.select_related('brand'),
         id=product_id,
         slug=slug
     )
@@ -184,7 +168,7 @@ def product_view_slug(request, product_id, slug):
 
 def brand_view_slug(request, brand_id, slug):
     brand = get_object_or_404(
-        Brand.objects.select_related('author'),
+        Brand.objects.all(),
         id=brand_id,
         slug=slug
     )
@@ -200,19 +184,6 @@ def store_view_slug(request, store_id, slug):
     )
     context = {'store': store}
     return render(request, 'product/store_single_page.html', context)
-
-
-def profile_view(request, username):
-    author = get_object_or_404(User, username=username)
-    author_brands = author.brands.distinct()
-    author_products = author.products.distinct()
-    page, paginator = get_paginated_view(request, author_brands, author_products)
-    context = {
-        'author': author,
-        'page': page,
-        'paginator': paginator,
-    }
-    return render(request, 'product/author_product.html', context)
 
 
 def product_view_redirect(request, product_id):

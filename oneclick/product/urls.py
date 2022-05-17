@@ -1,30 +1,27 @@
 from django.urls import include, path
 
-from .views import index, product_new, product_edit, product_delete, product_view_slug, product_view_redirect, \
-    profile_view
+from .views import brand_new, brand_edit, brand_delete, brand_view_slug, brand_view_redirect
 
-product_urls = [
-    path('new/', product_new, name='product_new'),
-    path('<int:product_id>/<slug:slug>/edit/', product_edit, name='product_edit'),
+brand_urls = [
+    path('new/', brand_new, name='brand_new'),
+    path('<int:brand_id>/<slug:slug>/edit/', brand_edit, name='brand_edit'),
     path(
-        '<int:product_id>/<slug:slug>/delete/',
-        product_delete, name='product_delete'
+        '<int:brand_id>/<slug:slug>/delete/',
+        brand_delete, name='brand_delete'
     ),
     path(
-        '<int:product_id>/<slug:slug>/',
-        product_view_slug, name='product_view_slug'
+        '<int:brand_id>/<slug:slug>/',
+        brand_view_slug, name='brand_view_slug'
     ),
     path(
-        '<int:product_id>/', product_view_redirect,
-        name='product_view_redirect'
+        '<int:brand_id>/', brand_view_redirect,
+        name='brand_view_redirect'
     ),
 ]
 
 urlpatterns = [
-    path('', index, name='index'),
     # path('subscriptions/', subscriptions, name='subscriptions'),
     # path('favorites/', favorites, name='favorites'),
-    # path('purchases/', include(oneclick_shop_urls)),
-    path('product/', include(product_urls)),
-    path('<str:username>/', profile_view, name='profile_view'),
+    # path('purchases/', include(basket_urls)),
+    path('brand/', include(brand_urls)),
 ]
