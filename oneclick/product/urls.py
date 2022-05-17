@@ -1,5 +1,7 @@
 from django.urls import include, path
 
+from .views import index, product_new, product_edit, product_delete, product_view_slug, product_view_redirect, \
+    profile_view
 
 product_urls = [
     path('new/', product_new, name='product_new'),
@@ -20,9 +22,9 @@ product_urls = [
 
 urlpatterns = [
     path('', index, name='index'),
-    path('subscriptions/', subscriptions, name='subscriptions'),
-    path('favorites/', favorites, name='favorites'),
-    path('purchases/', include(purchases_urls)),
+    # path('subscriptions/', subscriptions, name='subscriptions'),
+    # path('favorites/', favorites, name='favorites'),
+    # path('purchases/', include(oneclick_shop_urls)),
     path('product/', include(product_urls)),
     path('<str:username>/', profile_view, name='profile_view'),
 ]

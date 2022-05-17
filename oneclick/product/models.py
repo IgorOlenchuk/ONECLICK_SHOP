@@ -17,7 +17,7 @@ class Brand(models.Model):
     class Meta:
         ordering = ('title', )
         verbose_name = 'бренд'
-        verbose_name_plural = 'брендов'
+        verbose_name_plural = 'бренды'
 
     def __str__(self):
         return f'{self.title}, {self.description}'
@@ -37,25 +37,29 @@ class Product(models.Model):
     # Описание
     description = models.TextField(max_length=140)
     # Фото и видео-контент в странице товара
-    media_content = models.FileField('Медиа контент', upload_to='product/')
+    media_content = models.FileField('Медиа контент', upload_to='product/', blank=True)
     # Цена товара, не меньше 0.01
-    price = models.DecimalField(max_digits=12,
+    retail_price = models.DecimalField(max_digits=12,
                                 decimal_places=2,
                                 validators=[MinValueValidator(Decimal('0.01'))])
-    # Даты поступления товаров
+    wholesale_price = models.DecimalField(max_digits=12,
+                                decimal_places=2,
+                                validators=[MinValueValidator(Decimal('0.01'))])
+    # Даты поступления и ликвидации товаров
     date_of_receipt = models.DateTimeField(
         'Дата поступления',
         auto_now_add=True,
         db_index=True
     )
-    date_of__liquidation = models.DateTimeField(
+    date_of_liquidation = models.DateTimeField(
         'Дата ликвидации',
-        auto_now_add=True,
-        db_index=True
+        auto_now_add=False,
+        null=True,
+        blank=True
     )
 
     class Meta:
-        ordering = ('-date_of_receipt', '-date_of__liquidation',)
+        ordering = ('-date_of_receipt', )
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
 
