@@ -3,6 +3,24 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 
+# Склад
+class Store(models.Model):
+    title = models.CharField(
+        'Наименование склада',
+        max_length=20,
+        blank=False,
+        db_index=True
+    )
+
+    class Meta:
+        ordering = ('title',)
+        verbose_name = 'склад'
+        verbose_name_plural = 'склады'
+
+    def __str__(self):
+        return f'{self.title}'
+
+
 class Brand(models.Model):
     title = models.CharField(
         'Наименование бренда',
@@ -12,10 +30,11 @@ class Brand(models.Model):
     # Описание бренда
     description = models.TextField(max_length=140)
     # Логотип
-    image = models.ImageField('Логотип', upload_to='brand/')
+    image = models.ImageField('Логотип', upload_to='brand/', blank=True)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('title', )
+        ordering = ('title',)
         verbose_name = 'бренд'
         verbose_name_plural = 'бренды'
 
@@ -23,11 +42,9 @@ class Brand(models.Model):
         return f'{self.title}, {self.description}'
 
 
+# Товары
 class Product(models.Model):
     # Характеристики товара
-    brand = models.ManyToManyField(
-        Brand, through='BrandProduct'
-    )
     title = models.CharField(
         'Название товарв',
         max_length=150,
@@ -57,6 +74,13 @@ class Product(models.Model):
         null=True,
         blank=True
     )
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    quantity = models.DecimalField(
+        max_digits=6,
+        decimal_places=1,
+        validators=[MinValueValidator(1)]
+    )
 
     class Meta:
         ordering = ('-date_of_receipt', )
@@ -64,22 +88,19 @@ class Product(models.Model):
         verbose_name_plural = 'товары'
 
     def __str__(self):
-        return f'{self.brand}, {self.title}, {self.description}, {self.dimension}'
+        return f'{self.title}, {self.description}, {self.dimension}'
 
 
-# Связта товара с Брэндом
-class BrandProduct(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    brand = models.ForeignKey(
-        Brand,
-        on_delete=models.CASCADE,
-        related_name='product_brand'
-    )
+# Связта товара с Брэндом и его складом
+class BrandsStore(models.Model):
+    brands = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    stores = models.ForeignKey(Store, on_delete=models.CASCADE)
+
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=('product', 'brand'),
-                name='unique_brand_product'
+                fields=('brands', 'stores'),
+                name='unique_stores_brand'
             )
         ]

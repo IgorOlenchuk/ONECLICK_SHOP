@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
-from .models import Brand, BrandProduct, Product
+from .models import Brand, Product, Store, BrandsStore
 
 
 def get_paginated_view(request, some_list):
@@ -15,6 +15,7 @@ def get_paginated_view(request, some_list):
     return page, paginator
 
 
+# товары
 def get_product(request):
     products = {}
     post = request.POST
@@ -23,16 +24,6 @@ def get_product(request):
             num = key.partition('_')[-1]
             products[name] = post[f'valueProduct_{num}']
     return products
-
-
-def get_brand(request):
-    brands = {}
-    post = request.POST
-    for key, name in post.items():
-        if key.startswith('nameBrand'):
-            num = key.partition('_')[-1]
-            brands[name] = post[f'valueBrand_{num}']
-    return brands
 
 
 def save_product(request, form):
@@ -47,16 +38,59 @@ def save_product(request, form):
         for name, quantity in products.items():
             product = get_object_or_404(Product, title=name)
             objs.append(
-                BrandProduct(
+                BrandsStore(
                     product=product,
-                    brand=brand,
                     quantity=Decimal(quantity.replace(',', '.'))
                 )
             )
 
-        BrandProduct.objects.bulk_create(objs)
+        Product.objects.bulk_create(objs)
         form.save_m2m()
         return product
+
+
+# склады
+def get_store(request):
+    stores = {}
+    post = request.POST
+    for key, name in post.items():
+        if key.startswith('nameStore'):
+            num = key.partition('_')[-1]
+            stores[name] = post[f'valueStore_{num}']
+    return stores
+
+
+def save_store(request, form):
+    with transaction.atomic():
+        store = form.save(commit=False)
+        store.author = request.user
+        store.save()
+
+        objs = []
+        stores = get_store(request)
+
+        for name in stores.items():
+            store = get_object_or_404(Store, title=name)
+            objs.append(
+                BrandsStore(
+                    store=store,
+                )
+            )
+
+        Store.objects.bulk_create(objs)
+        form.save_m2m()
+        return store
+
+
+# брэнды
+def get_brand(request):
+    brands = {}
+    post = request.POST
+    for key, name in post.items():
+        if key.startswith('nameBrand'):
+            num = key.partition('_')[-1]
+            brands[name] = post[f'valueBrand_{num}']
+    return brands
 
 
 def save_brand(request, form):
@@ -67,11 +101,12 @@ def save_brand(request, form):
 
         objs = []
         brands = get_brand(request)
+
         for name in brands.items():
             brand = get_object_or_404(Brand, title=name)
             objs.append(
-                BrandProduct(
-                    brand=brand
+                BrandsStore(
+                    brand=brand,
                 )
             )
 
@@ -80,13 +115,25 @@ def save_brand(request, form):
         return brand
 
 
-def edit_product(request, form, instance):
-    with transaction.atomic():
-        BrandProduct.objects.filter(product=instance).delete()
-        return save_product(request, form)
+
+
+
+
 
 
 def edit_brand(request, form, instance):
     with transaction.atomic():
-        Brand.objects.filter(product=instance).delete()
+        Brand.objects.filter(brand=instance).delete()
         return save_brand(request, form)
+
+
+def edit_store(request, form, instance):
+    with transaction.atomic():
+        Store.objects.filter(store=instance).delete()
+        return save_brand(request, form)
+
+
+def edit_product(request, form, instance):
+    with transaction.atomic():
+        Product.objects.filter(product=instance).delete()
+        return save_product(request, form)
