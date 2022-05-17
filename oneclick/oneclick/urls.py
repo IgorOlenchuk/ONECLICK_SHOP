@@ -14,9 +14,9 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('', include('oneclick_shop.urls')),
+    #path('', include('oneclick_shop.urls')),
     path('api-token-auth/', views.obtain_auth_token),
-    path('api/', include('api.urls')),
+    #path('api/', include('api.urls')),
     path('product/', include('product.urls')),
-    path('basket/', include('basket.urls')),
+    #path('basket/', include('basket.urls')),
 ]
