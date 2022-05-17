@@ -1,0 +1,7 @@
+{% extends "blog/base.html" %}
+
+{% block container %}
+  <p>Вы вышли из системы!</p>
+
+  <a href="{% url 'login' %}">Кликните сюда, чтобы войти снова.</a>
+{% endblock %}
